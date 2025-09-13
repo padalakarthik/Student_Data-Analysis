@@ -1,0 +1,209 @@
+use student_data;
+
+-- Find the list of students who are eligible for a scholarship.--
+
+SELECT 
+    name,
+    roll_number,
+    scholarship_eligibility
+FROM
+    day_10_attendance
+WHERE
+    scholarship_eligibility = 'Yes';
+    
+    
+-- Find the average CGPA of students per branch.--
+
+SELECT 
+    department, ROUND(AVG(cgpa), 2) AS avg_cgpa
+FROM
+    day_3_first_half
+GROUP BY department;
+
+
+-- List top 5 students with the highest domain ratings. --
+
+SELECT 
+    name, roll_number, workshop_rating
+FROM
+    day_11_attendance
+ORDER BY workshop_rating DESC
+LIMIT 5;
+
+
+-- Count how many students have spectacles and how many don’t. --
+
+SELECT 
+    has_spectacles,
+    COUNT(*) AS total_students
+FROM
+    day_11_attendance
+GROUP BY has_spectacles;
+
+
+-- List all students whose preferred domain includes 'DA'. --
+
+SELECT 
+    name, roll_number, domain_preferred_iv_i
+FROM
+    2025_master_data
+WHERE
+    domain_preferred_iv_i LIKE 'Data Analytics';
+
+
+-- Find students who are eligible for scholarship and have CGPA above 8.0. --
+
+SELECT 
+    D10.name,
+    D10.roll_number,
+    D10.scholarship_eligibility,
+    D3.cgpa
+FROM
+    day_10_attendance D10
+        JOIN
+    day_3_first_half D3 ON D10.roll_number = D3.roll_number
+WHERE
+    scholarship_eligibility = 'Yes'
+        AND cgpa > 8.0;
+        
+        
+-- Find the count of male and female students.
+
+SELECT 
+    gender, COUNT(*) AS Total_students
+FROM
+    day_3_first_half
+GROUP BY gender;
+
+
+-- Get the average mobile screen watch time by transportation type. --
+
+SELECT 
+    D4.transportation_type AS transportation,
+    AVG(D3.mobile_watch_time_mins) AS Avg_mobile_screen_watch_time
+FROM
+    day_4_first_half D4
+        JOIN
+    day_3_first_half D3 ON D4.roll_number - D3.roll_number
+GROUP BY transportation;
+
+
+-- Find how many students are there for each blood group. --
+
+SELECT 
+    blood_group, COUNT(*)
+FROM
+    day_3_first_half
+GROUP BY blood_group;
+
+
+-- Get the name, email, and mobile of students eligible for a scholarship. --
+
+SELECT 
+    D1.name,
+    D1.roll_number,
+    D1.mobile_number,
+    D10.scholarship_eligibility
+FROM
+    day_1_first_half D1
+        JOIN
+    day_10_attendance D10 ON D1.roll_number = D10.roll_number
+WHERE
+    D10.scholarship_eligibility = 'Yes';
+
+
+-- List students with CGPA > 8.5 and whether they have spectacles or not. --
+
+SELECT 
+    D3.roll_number, D3.cgpa, D11.has_spectacles
+FROM
+    day_3_first_half D3
+        JOIN
+    day_11_attendance D11 ON D3.roll_number = D11.roll_number
+WHERE
+    D3.cgpa > 8.5;
+    
+    
+-- Find transportation types of top 5 students with highest domain rating. --
+
+SELECT 
+    D4.name,
+    D4.roll_number,
+    D4.transportation_type,
+    D11.workshop_rating
+FROM
+    day_4_first_half D4
+        JOIN
+    day_11_attendance D11 ON D4.roll_number = D11.roll_number
+ORDER BY D11.workshop_rating DESC
+LIMIT 5
+;
+
+
+-- Calculate average CGPA grouped by gender. --
+
+SELECT 
+    D3.gender, AVG(D9.cgpa)
+FROM
+    day_3_first_half D3
+        JOIN
+    day_9_attendance D9 ON D3.roll_number = D9.roll_number
+GROUP BY D3.gender;
+
+
+-- Count how many students belong to each native place. --
+
+SELECT 
+    native_place, COUNT(*)
+FROM
+    day_4_first_half
+GROUP BY native_place;
+
+
+-- calculate attendence for each student --
+
+SELECT 
+    name,
+    roll_number,
+    CONCAT(ROUND(COUNT(roll_number) / 11 * 100, 1),
+            '%') AS attendence_percent
+FROM
+    (SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_1_first_half UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_1_second_half UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_2_first_half UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_4_first_half UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_5_first_half UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_6_attendance UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_7_attendance UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_8_attendance UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_9_attendance UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_10_attendance UNION ALL SELECT DISTINCT
+        roll_number, name
+    FROM
+        day_11_attendance) AS new_table
+GROUP BY name , roll_number
+ORDER BY ROUND(COUNT(roll_number) / 11 * 100, 1) DESC
+;
+
+
